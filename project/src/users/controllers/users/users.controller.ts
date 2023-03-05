@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, ExceptionFilter, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors, } from '@nestjs/common';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { UserDto } from 'src/users/dtos/user-dto/user-dto';
 import { UserService } from 'src/users/services/user-service/user.service';
@@ -52,8 +52,7 @@ export class UsersController {
                 user: updatedUser
             }
         } catch(e: any) {
-            console.log(e)
-            return new HttpException({}, HttpStatus.NOT_FOUND);
+            throw new HttpException({ message: "User not found" }, HttpStatus.NOT_FOUND);
         }
 
     }

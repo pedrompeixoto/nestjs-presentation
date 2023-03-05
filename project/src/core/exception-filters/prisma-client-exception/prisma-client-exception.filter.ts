@@ -28,5 +28,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
             return super.catch(new HttpException({ success: false, message: exception.message, statusCode }, statusCode), host);
         }
+
+        return super.catch(exception, host);
     }
 }
