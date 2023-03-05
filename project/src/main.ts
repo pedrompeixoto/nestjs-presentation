@@ -1,8 +1,7 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
-import { RolesGuard } from './common/guards/roles/roles.guard';
 import { logger } from './common/middleware/logger/logger.middleware';
+import { PrismaClientExceptionFilter } from './core/exception-filters/prisma-client-exception/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +9,10 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
   // app.useGlobalGuards(new RolesGuard());
   app.use(logger);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+
   await app.listen(3000);
 }
 bootstrap();

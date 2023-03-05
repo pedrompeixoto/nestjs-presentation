@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import { UserEntity } from 'src/users/entity/user/user.entity';
+import { Prisma, User } from '@prisma/client';
+import { PrismaService } from 'src/core/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-    usersMock: Array<UserEntity> = [
-        {
-            id: randomUUID(),
-            username: "pmpp",
-            firstName: "Pedro",
-            lastName: "Peixoto"
-        }
-    ]
+
+    constructor(private prismaService: PrismaService) {}
 
     // onModuleInit() { console.log("on module init") }
     // onApplicationBootstrap() { console.log("on application bootstrap") }
@@ -19,44 +13,36 @@ export class UserService {
     // beforeApplicationShutdown() { console.log("before application shutdown") }
     // onApplicationShutdown() { console.log("on application shutdown") }
 
-    getAll(name?: string) {
+    getAll(name?: string): Promise<User[]> {
         if (name) {
-            return this.usersMock.filter(u => (u.firstName + u.lastName).includes(name));
+            return this.prismaService.user.findMany({
+                where: { username: name }
+            });
         } else {
-            return this.usersMock;
+            return this.prismaService.user.findMany();
         }
     }
 
-    getById(id: string) {
-        return this.usersMock.find(u => u.id === id);
+    getById(id: string): Promise<User> {
+        return this.prismaService.user.findUniqueOrThrow({ where: { id } });
     }
 
-    update(user: UserEntity) {
-        const userIndex = this.usersMock.findIndex(user => user.id === user.id)
-        if (userIndex > -1) {
-            this.usersMock[userIndex] = user;
-            return this.usersMock[userIndex];
-        } else {
-            return undefined;
-        }
+    update(user: Prisma.UserUpdateInput, where: Prisma.UserWhereUniqueInput): Promise<User> {
+        return this.prismaService.user.update({
+            data: user,
+            where 
+        });
     }
 
-    create(user: UserEntity) {
-        this.usersMock.push(user);
-        return user;
+    create(user: Prisma.UserCreateInput): Promise<User> {
+        return this.prismaService.user.create({
+            data: user
+        });
     }
 
-    delete(userId: string) {
-        const userIndex = this.usersMock.findIndex(u => u.id === userId)
-        if (userIndex > -1) {
-            this.usersMock.splice(userIndex, 1);
-        } else {
-            return undefined;
-        }
-        return userId;
-    }
-
-    findByName(name: string) {
-
+    delete(id: string): Promise<User> {
+        return this.prismaService.user.delete({
+            where: { id }
+        });
     }
 }
