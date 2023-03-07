@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, ExceptionFilter, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors, } from '@nestjs/common';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { UserDto } from 'src/users/dtos/user-dto/user-dto';
 import { UserService } from 'src/users/services/user-service/user.service';
 import { LoggingInterceptor } from 'src/common/interceptors/logging/logging.interceptor';
+import { MessageDTO } from 'src/messages/dtos/message-dto';
 
 @Controller('users')
 @UseInterceptors(LoggingInterceptor)
@@ -13,17 +14,31 @@ export class UsersController {
     @Get()
     async getUsers(@Query("name") name?: string) {
         const users = await this.userService.getAll(name);
-        return { success: true, users };
+        return { success: true, users: UserDto.fromEntityArray(users) };
     }
-
 
     @Get(":id")
     async getUserById(
-        @Param("id", new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) 
-        id: string
+        @Param("id", new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id: string
     ) {
         const user = await this.userService.getById(id);
-        return { success: true, user };
+        return { success: true, user: new UserDto(user.id, user.username, user.lastName, user.firstName) };
+    }
+
+    @Get(":id/messages")
+    async getUserMessages(
+        @Param("id", new ParseUUIDPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) id:string
+    ) {
+        const user = await this.userService.getUnique({
+            where: { id },
+            include: { messages: true }
+        });
+
+        return { 
+            success: true, 
+            user: new UserDto(user.id, user.username, user.lastName, user.firstName),
+            messages: MessageDTO.fromEntityArray(user.messages)
+        };
     }
 
     @Post()
@@ -34,7 +49,7 @@ export class UsersController {
             lastName: userDto.lastName
         });
 
-        return { success: true, user };
+        return { success: true, user: UserDto.fromEntity(user) };
     }
 
     @Put(":id")
@@ -49,7 +64,7 @@ export class UsersController {
 
             return {
                 success: true,
-                user: updatedUser
+                user: UserDto.fromEntity(updatedUser)
             }
         } catch(e: any) {
             throw new HttpException({ message: "User not found" }, HttpStatus.NOT_FOUND);
@@ -64,7 +79,7 @@ export class UsersController {
         const deletedUser = await this.userService.delete(id);
         return {
             success: true,
-            user: deletedUser
+            user: UserDto.fromEntity(deletedUser)
         };
     }
 }

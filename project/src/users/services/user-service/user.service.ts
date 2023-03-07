@@ -23,6 +23,33 @@ export class UserService {
         }
     }
 
+    get(options: { 
+        where?: Prisma.UserWhereInput, 
+        orderBy?: Prisma.UserOrderByWithRelationInput,
+        cursor?: Prisma.UserWhereUniqueInput,
+        include?: Prisma.UserInclude,
+        skip?: number,
+        take?: number,
+    }): Promise<User[]> {
+        const { where, orderBy, skip, take, cursor, include } = options;
+
+        return this.prismaService.user.findMany({
+            where,
+            orderBy,
+            skip,
+            take,
+            cursor,
+            include
+        });
+    }
+
+    getUnique(options: { 
+        where?: Prisma.UserWhereUniqueInput, 
+        include?: Prisma.UserInclude,
+    }) {
+        return this.prismaService.user.findUniqueOrThrow({ where: options.where, include: options.include });
+    }
+
     getById(id: string): Promise<User> {
         return this.prismaService.user.findUniqueOrThrow({ where: { id } });
     }

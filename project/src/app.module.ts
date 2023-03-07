@@ -7,9 +7,10 @@ import { CoreModule } from './core/core.module';
 import { LoggerMiddleware } from './common/middleware/logger/logger.middleware';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guards/roles/roles.guard';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [CoreModule, UsersModule, ConfigModule.register({ folder: './config' })],
+  imports: [CoreModule, UsersModule, ConfigModule.register({ folder: './config' }), MessagesModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_GUARD,
