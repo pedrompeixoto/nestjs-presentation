@@ -10,7 +10,7 @@ import { RolesGuard } from './common/guards/roles/roles.guard';
 import { MessagesModule } from './messages/messages.module';
 
 @Module({
-  imports: [CoreModule, UsersModule, ConfigModule.register({ folder: './config' }), MessagesModule],
+  imports: [CoreModule, UsersModule, MessagesModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_GUARD,

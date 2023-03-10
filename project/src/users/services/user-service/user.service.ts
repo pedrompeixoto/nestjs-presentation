@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/core/prisma/prisma.service';
+import { Utils } from 'src/core/utils/utils';
+import { CreateUserDto } from 'src/users/dtos/create-user-dto';
 
 @Injectable()
 export class UserService {
 
-    constructor(private prismaService: PrismaService) {}
+    constructor(private prismaService: PrismaService, private utils: Utils) {}
 
     // onModuleInit() { console.log("on module init") }
     // onApplicationBootstrap() { console.log("on application bootstrap") }
@@ -61,10 +63,25 @@ export class UserService {
         });
     }
 
-    create(user: Prisma.UserCreateInput): Promise<User> {
-        return this.prismaService.user.create({
-            data: user
-        });
+    async create(user: CreateUserDto): Promise<User> {
+        let password = ""
+
+        try {
+            password = await this.utils.hash(user.password); 
+
+            user = await this.prismaService.user.create({
+                data: {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    username: user.username,
+                    password
+                }
+            });
+
+            return user;
+        } catch(e: any) {
+            throw e;
+        }
     }
 
     delete(id: string): Promise<User> {

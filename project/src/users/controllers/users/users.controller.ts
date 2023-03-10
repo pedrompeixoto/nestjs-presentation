@@ -4,6 +4,7 @@ import { UserDto } from 'src/users/dtos/user-dto/user-dto';
 import { UserService } from 'src/users/services/user-service/user.service';
 import { LoggingInterceptor } from 'src/common/interceptors/logging/logging.interceptor';
 import { MessageDTO } from 'src/messages/dtos/message-dto';
+import { CreateUserDto } from 'src/users/dtos/create-user-dto';
 
 @Controller('users')
 @UseInterceptors(LoggingInterceptor)
@@ -42,13 +43,8 @@ export class UsersController {
     }
 
     @Post()
-    async create(@Body(new ValidationPipe()) userDto: UserDto) {
-        const user = await this.userService.create({
-            username: userDto.username,
-            firstName: userDto.firstName,
-            lastName: userDto.lastName
-        });
-
+    async create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
+        const user = await this.userService.create(createUserDto);
         return { success: true, user: UserDto.fromEntity(user) };
     }
 

@@ -15,6 +15,7 @@ model User {
     username String  @unique
     firstName  String
     lastName String
+    password String
     messages Message[]
 }
 
