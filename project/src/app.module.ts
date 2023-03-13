@@ -2,15 +2,15 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { ConfigModule } from './config/config.module';
 import { CoreModule } from './core/core.module';
 import { LoggerMiddleware } from './common/middleware/logger/logger.middleware';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guards/roles/roles.guard';
 import { MessagesModule } from './messages/messages.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [CoreModule, UsersModule, MessagesModule],
+  imports: [CoreModule, UsersModule, MessagesModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_GUARD,

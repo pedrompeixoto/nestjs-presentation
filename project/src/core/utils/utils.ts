@@ -15,7 +15,7 @@ export class Utils {
         return await bcrypt.hash(value, Number(rounds));
     }
 
-    validateHash(hash: string, valueToCompare: string): Promise<boolean> {
-        return bcrypt.compare(valueToCompare, hash);
+    validateHash(value: string, hash: string): Promise<boolean> {
+        return bcrypt.compare(value, hash);
     }
 }
