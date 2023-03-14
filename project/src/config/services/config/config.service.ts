@@ -15,8 +15,6 @@ export class ConfigService {
         const envFile = path.resolve(__dirname, '../../../../', options.folder, filePath);
         this.envConfig = dotenv.parse(fs.readFileSync(envFile));
         dotenv.config({ path: envFile });
-        console.log(this.envConfig)
-        console.log(process.env)
     }
 
     get(key: string): string {

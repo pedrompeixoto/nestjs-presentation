@@ -1,4 +1,4 @@
-import { Strategy } from 'passport-local';
+import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
@@ -8,7 +8,8 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private readonly userService: UserService) {
+
+    constructor(private userService: UserService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.SECRET,
@@ -19,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.userService.getById(payload.userId);
         if (!user) {
             throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);    
-        }    
+        }
         return user;  
     }
 }

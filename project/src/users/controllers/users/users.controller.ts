@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, UseGuards, UseInterceptors, } from '@nestjs/common';
 import { ValidationPipe } from 'src/common/pipes/validation.pipe';
 import { UserDto } from 'src/users/dtos/user-dto/user-dto';
 import { UserService } from 'src/users/services/user-service/user.service';
 import { LoggingInterceptor } from 'src/common/interceptors/logging/logging.interceptor';
 import { MessageDTO } from 'src/messages/dtos/message-dto';
 import { CreateUserDto } from 'src/users/dtos/create-user-dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @Controller('users')
 @UseInterceptors(LoggingInterceptor)
@@ -12,6 +13,7 @@ export class UsersController {
 
     constructor(private userService: UserService) { }
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     async getUsers(@Query("name") name?: string) {
         const users = await this.userService.getAll(name);
